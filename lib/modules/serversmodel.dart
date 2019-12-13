@@ -1,4 +1,4 @@
-import 'dart:js';
+
 
 import 'package:aria2gui/modules/profile.dart';
 import 'package:flutter/material.dart';
@@ -25,10 +25,8 @@ class ServersModel extends ChangeNotifier {
           ls.setItem("servers", []);
         }
       }
+      notifyListeners();
     });
-  }
-  Future<void> init(){
-    
   }
 
   int get index => _index;
@@ -39,27 +37,27 @@ class ServersModel extends ChangeNotifier {
     notifyListeners();
   }
 
-  Future<Profile> getNow() async {
-    return await ls.ready.then<Profile>((v) {
-      if (v) {
-        List list = ls.getItem("servers");
-        int index = ls.getItem("index");
-        if (list.isEmpty || list == null) {
-          return Profile("empty", "","", "");
-        }
-        if (index == null) {
-          return Profile.fromJson(list[0]);
-        } else {
-          return Profile.fromJson(list[index]);
-        }
-      }
+  Profile getNow() {
+    // return await ls.ready.then<Profile>((v) {
+    //   if (v) {
+    //     List list = ls.getItem("servers");
+    //     int index = ls.getItem("index");
+    //     if (list.isEmpty || list == null) {
+    //       return Profile("empty", "", "", "");
+    //     }
+    //     if (index == null) {
+    //       return Profile.fromJson(list[0]);
+    //     } else {
+    //       return Profile.fromJson(list[index]);
+    //     }
+    //   }
+    //   return Profile("empty", "", "", "");
+    // });
+    if (_servers.isEmpty) {
       return Profile("empty", "","", "");
-    });
-    // if (_servers.isEmpty) {
-    //   return Profile("empty", "", "");
-    // } else {
-    //   return _servers[_index];
-    // }
+    } else {
+      return _servers[_index];
+    }
   }
 
   void add(Profile profile) {

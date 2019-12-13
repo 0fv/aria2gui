@@ -23,27 +23,28 @@ class _IndexPageState extends State<IndexPage> {
     return Container(
       child: Scaffold(
         appBar: AppBar(
-          title: FutureBuilder(
-              future: Provider.of<ServersModel>(context).getNow(),
-              builder: (context, AsyncSnapshot<Profile> snapshot) {
-                switch (snapshot.connectionState) {
-                  case ConnectionState.done:
-                    if (!snapshot.hasError)
-                      return Text("aria2-profile:${snapshot.data.name}");
-                    break;
+          title: 
+          // FutureBuilder(
+          //     future: Provider.of<ServersModel>(context).getNow(),
+          //     builder: (context, AsyncSnapshot<Profile> snapshot) {
+          //       switch (snapshot.connectionState) {
+          //         case ConnectionState.done:
+          //           if (!snapshot.hasError)
+          //             return Text("aria2-profile:${snapshot.data.name}");
+          //           break;
 
-                  case ConnectionState.none:
-                    break;
-                  case ConnectionState.waiting:
-                    break;
-                  case ConnectionState.active:
-                    break;
-                }
-                return Container(); 
-              }
-              ),
-          //   Text(
-          //       "aria2-profile:${ Provider.of<ServersModel>(context).getNow()}"),
+          //         case ConnectionState.none:
+          //           break;
+          //         case ConnectionState.waiting:
+          //           break;
+          //         case ConnectionState.active:
+          //           break;
+          //       }
+          //       return Container(); 
+          //     }
+          //     ),
+            Text(
+                "aria2-profile:${ Provider.of<ServersModel>(context).getNow().name}"),
         ),
         drawer: Drawer(
           child: Column(

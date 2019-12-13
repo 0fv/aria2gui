@@ -1,4 +1,3 @@
-import 'dart:js';
 
 import 'package:aria2gui/pages/Index.dart';
 import 'package:flutter/material.dart';

@@ -23,9 +23,8 @@ class Downloading extends StatefulWidget {
 class _DownloadingState extends State<Downloading> {
   @override
   Widget build(BuildContext context) {
-    final List<Profile> list = Provider.of<ServersModel>(context).servers;
-    final index = Provider.of<ServersModel>(context).index;
-    final channel = widget.aria2api.connect(list[index]);
+    final profile = Provider.of<ServersModel>(context).getNow();
+    final channel = widget.aria2api.connect(profile);
     return Scaffold(
       body: EasyRefresh.custom(
         header: MaterialHeader(),
