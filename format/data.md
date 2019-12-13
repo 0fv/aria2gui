@@ -85,7 +85,7 @@
       "gid": "ef81bc242a1a65db",
       "numPieces": "1987",
       "pieceLength": "1048576",
-      "status": "active",
+      "flutter_easyrefresh": "active",
       "totalLength": "2082816000",
       "uploadLength": "0",
       "uploadSpeed": "0"

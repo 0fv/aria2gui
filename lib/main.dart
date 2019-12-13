@@ -1,19 +1,26 @@
+import 'package:aria2gui/modules/profilemodel.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
+import 'modules/serversmodel.dart';
 import 'router/router.dart';
 
 void main() => runApp(MyApp());
 
 class MyApp extends StatelessWidget {
-  // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      debugShowCheckedModeBanner: false,
-      // home: Tabs(),
-      initialRoute: '/',
-      theme: ThemeData(primaryColor: Colors.yellow),
-      onGenerateRoute: renderPage
+    return MultiProvider(
+      providers: [
+        ChangeNotifierProvider(
+          create: (context) => ServersModel(),
+        )
+      ],
+      child: MaterialApp(
+          debugShowCheckedModeBanner: false,
+          initialRoute: '/',
+          theme: ThemeData(primaryColor: Colors.yellow),
+          onGenerateRoute: renderPage),
     );
   }
 }

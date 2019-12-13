@@ -5,6 +5,7 @@ class DownloadingFile extends StatefulWidget {
   final speed;
   final percentage;
   final workingPeer;
+  final status;
   final gid;
   DownloadingFile(
       {Key key,
@@ -12,7 +13,8 @@ class DownloadingFile extends StatefulWidget {
       @required this.speed,
       @required this.percentage,
       @required this.workingPeer,
-      @required this.gid})
+      @required this.gid,
+      @required this.status})
       : super(key: key);
 
   @override
@@ -36,7 +38,7 @@ class _DownloadingFileState extends State<DownloadingFile> {
                   valueColor: AlwaysStoppedAnimation(Colors.blue),
                   value: 0),
               Text(
-                "speed:${widget.speed} peer num:${widget.workingPeer}",
+                "speed:${widget.speed} peer num:${widget.workingPeer} status:${widget.status}",
               )
             ],
           ),
