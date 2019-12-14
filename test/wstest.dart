@@ -8,7 +8,6 @@ main() async {
   var p = Profile.fromJson(vprofile);
   Aria2Api aria2api = Aria2Api();
   aria2api.connect(p);
-  await aria2api.pauseGid("987e254ac4b74a0f");
   List<Future<Response>> x = aria2api.getStatus();
   for (Future<Response> y in x) {
     Response z = await y;

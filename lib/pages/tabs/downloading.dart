@@ -41,7 +41,6 @@ class _DownloadingState extends State<Downloading> {
   didChangeDependencies() {
     super.didChangeDependencies();
     final profile = Provider.of<ServersModel>(context).getNow();
-
     if (profile != this._profile &&
         profile != null &&
         profile.addr.isNotEmpty) {
@@ -50,9 +49,9 @@ class _DownloadingState extends State<Downloading> {
       _refreshIndicatorKey = new GlobalKey<RefreshIndicatorState>();
       SchedulerBinding.instance.addPostFrameCallback((_) {
         _refreshIndicatorKey.currentState?.show();
+        this._onRefresh();
+        this._startTimer();
       });
-
-      this._onRefresh();
     }
   }
 
@@ -61,7 +60,6 @@ class _DownloadingState extends State<Downloading> {
     if (_profile == null) {
       return Scaffold();
     }
-    // this._startTimer();
     return Scaffold(
         floatingActionButton: FloatingActionButton(
           child: Icon(Icons.add),
@@ -96,6 +94,14 @@ class _DownloadingState extends State<Downloading> {
     });
   }
 
+  void _onSyncRefresh() async {
+    _data.clear();
+    var data = await _fetchData();
+    setState(() {
+      this._data = data;
+    });
+  }
+
   List<Widget> _getStatusList(List data, BuildContext context) {
     List results = List();
     data.forEach((m) {
@@ -107,36 +113,46 @@ class _DownloadingState extends State<Downloading> {
       }
     });
     return results.map((v) {
+      var filename = null;
+      var bittorrent = v["bittorrent"];
+      // if (bittorrent = null) {
       List filedir = v["files"][0]["path"].toString().split("/");
-      var filename = filedir[filedir.length - 1];
+      filename = filedir[filedir.length - 1];
+      // }else{
+      //   filename = bittorrent["info"]["name"];
+      // }
+
       var speed = SpeedUtil.getSpeedFormat(v["downloadSpeed"]);
       var gid = v["gid"];
       var status = v["status"];
       var workingPeer = v["connections"];
       var percentage = 0.0;
       int t = int.parse(v["totalLength"]);
+      Aria2Api aria2api = _aria2api;
       if (t != 0) {
         percentage =
             (int.parse(v["completedLength"]) / int.parse(v["totalLength"]));
       }
+      if (status == "paused") {
+        speed = SpeedUtil.getSpeedFormat("0");
+      }
 
       return Builder(
           builder: (context) => DownloadingFile(
-                filename: filename,
-                speed: speed,
-                gid: gid,
-                status: status,
-                workingPeer: workingPeer,
-                percentage: percentage,
-              ));
+              filename: filename,
+              speed: speed,
+              gid: gid,
+              status: status,
+              workingPeer: workingPeer,
+              percentage: percentage,
+              aria2api: _aria2api));
     }).toList();
   }
 
   _startTimer() {
-    this._timer = new Timer.periodic(new Duration(seconds: 10), (timer) {
-      setState(() {
-        _onRefresh();
-      });
+    this._timer = Timer.periodic(new Duration(seconds: 60), (timer) {
+      print("_startTimer");
+      this._onSyncRefresh();
     });
   }
 

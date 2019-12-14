@@ -24,3 +24,8 @@ import 'package:aria2gui/modules/profile.dart';
 //   bool rd;
 //   print(rd);
 // }
+main(List<String> args) {
+  String a = "233";
+  print(a == "233");
+  print(a != "233");
+}
