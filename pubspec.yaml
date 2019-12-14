@@ -27,7 +27,7 @@ dependencies:
   provider: ^3.2.0
   localstorage: ^3.0.0
   web_socket_channel: 1.1.0
-  flutter_easyrefresh: 2.0.6
+  dio: 3.0.7
   # json_annotation: 3.0.0
 
 dev_dependencies:

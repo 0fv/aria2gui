@@ -1,5 +1,3 @@
-
-
 import 'package:aria2gui/modules/profile.dart';
 import 'package:flutter/material.dart';
 import 'package:localstorage/localstorage.dart';
@@ -31,30 +29,18 @@ class ServersModel extends ChangeNotifier {
 
   int get index => _index;
 
-  void setIndex(int index) {
+  void setIndex(var index) {
+    if (index.runtimeType == String) {
+      index = int.parse(index);
+    }
     this._index = index;
     ls.setItem("index", index);
     notifyListeners();
   }
 
   Profile getNow() {
-    // return await ls.ready.then<Profile>((v) {
-    //   if (v) {
-    //     List list = ls.getItem("servers");
-    //     int index = ls.getItem("index");
-    //     if (list.isEmpty || list == null) {
-    //       return Profile("empty", "", "", "");
-    //     }
-    //     if (index == null) {
-    //       return Profile.fromJson(list[0]);
-    //     } else {
-    //       return Profile.fromJson(list[index]);
-    //     }
-    //   }
-    //   return Profile("empty", "", "", "");
-    // });
     if (_servers.isEmpty) {
-      return Profile("empty", "","", "");
+      return Profile("empty", "", "", "");
     } else {
       return _servers[_index];
     }

@@ -11,7 +11,7 @@ class Instruction {
     m["method"] = _method;
     m["id"] = _id;
     if (token != null) {
-      _params.add("token:${this.token}");
+      _params.insert(0,"token:${this.token}");
     }
     m["params"] = _params;
     return m;

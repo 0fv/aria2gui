@@ -36,7 +36,7 @@ class _DownloadingFileState extends State<DownloadingFile> {
               LinearProgressIndicator(
                   backgroundColor: Colors.grey[200],
                   valueColor: AlwaysStoppedAnimation(Colors.blue),
-                  value: 0),
+                  value: widget.percentage),
               Text(
                 "speed:${widget.speed} peer num:${widget.workingPeer} status:${widget.status}",
               )
