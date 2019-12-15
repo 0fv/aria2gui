@@ -3,7 +3,6 @@ import 'dart:convert';
 import 'package:aria2gui/modules/instruction.dart';
 import 'package:aria2gui/modules/profile.dart';
 import 'package:dio/dio.dart';
-import 'package:web_socket_channel/io.dart';
 
 class Aria2Api {
   Profile _profile;
@@ -11,10 +10,11 @@ class Aria2Api {
   Dio _dio;
   Aria2Api();
 
-  void connect(Profile profile) {
+  Aria2Api connect(Profile profile) {
     this._profile = profile;
     this._url = "http://${this._profile.addr}:${this._profile.port}/jsonrpc";
     _dio = Dio();
+    return this;
   }
 
   void close() {
@@ -56,6 +56,40 @@ class Aria2Api {
 
   Future<Response> removeGid(String gid) {
     return sendMsg(
-        Instruction("aria2.remove", [gid], token: this._profile.token));
+        Instruction("aria2.forceRemove", [gid], token: this._profile.token));
+  }
+
+  addLinkTasks(String links) {
+    List<String> urls = links.split(",");
+    for (String l in urls) {
+      if (l.startsWith("magnet")) {
+        addMagnetTasks(l);
+      } else {
+        addNTask(l);
+      }
+    }
+  }
+
+  Future<Response> addNTask(String links) {
+    return sendMsg(Instruction(
+        "aria2.addUri",
+        [
+          [links]
+        ],
+        token: this._profile.token));
+  }
+
+  Future<Response> addMagnetTasks(String link) {
+    return sendMsg(Instruction(
+        "aria2.addUri",
+        [
+          [link]
+        ],
+        token: this._profile.token));
+  }
+
+  Future<void> addTorrent(String task) {
+    return sendMsg(
+        Instruction("aria2.addTorrent", [task], token: this._profile.token));
   }
 }

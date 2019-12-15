@@ -1,3 +1,4 @@
+import 'package:aria2gui/common/aria2api.dart';
 import 'package:aria2gui/modules/profile.dart';
 import 'package:flutter/material.dart';
 import 'package:localstorage/localstorage.dart';

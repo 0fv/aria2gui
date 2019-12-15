@@ -2,16 +2,18 @@ import 'dart:async';
 import 'dart:convert';
 
 import 'package:aria2gui/common/aria2api.dart';
+import 'package:aria2gui/modules/inactivemodel.dart';
 import 'package:aria2gui/modules/profile.dart';
 import 'package:aria2gui/modules/serversmodel.dart';
-import 'package:aria2gui/util/speedutil.dart';
 import 'package:aria2gui/widgets/dowloadfile.dart';
+import 'package:aria2gui/widgets/newmission.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:provider/provider.dart';
 
 class Downloading extends StatefulWidget {
+  
   Downloading({Key key}) : super(key: key);
 
   @override
@@ -64,7 +66,18 @@ class _DownloadingState extends State<Downloading> {
         floatingActionButton: FloatingActionButton(
           child: Icon(Icons.add),
           onPressed: () async {
-            await _onRefresh();
+            Map m = await addMission(context);
+
+            if (m != null) {
+              if (m.containsKey("torrent")) {
+                await this._aria2api.addTorrent(m["torrent"]);
+                print("torrent" + m["torrent"]);
+              } else if (m.containsKey("urls")) {
+                await this._aria2api.addLinkTasks(m["urls"]);
+              }
+            }
+
+            this._onRefresh();
           },
         ),
         body: Container(
@@ -103,55 +116,34 @@ class _DownloadingState extends State<Downloading> {
   }
 
   List<Widget> _getStatusList(List data, BuildContext context) {
-    List results = List();
+    List<Widget> results = List();
+    results.add(Container());
     data.forEach((m) {
       Map v = json.decode(m);
       List r = v["result"];
 
       if (r.isNotEmpty) {
-        results.addAll(r);
+        r.forEach((e) {
+          var status = e["status"];
+
+          if (status == "active" || status == "paused") {
+            results.add(Builder(
+                builder: (context) => DownloadingFile(
+                      missionInfo: e,
+                      aria2api: _aria2api,
+                      onSyncRefresh: _onRefresh,
+                    )));
+          } else {
+            Provider.of<InactiveModel>(context).add(e);
+          }
+        });
       }
     });
-    return results.map((v) {
-      var filename = null;
-      var bittorrent = v["bittorrent"];
-      // if (bittorrent = null) {
-      List filedir = v["files"][0]["path"].toString().split("/");
-      filename = filedir[filedir.length - 1];
-      // }else{
-      //   filename = bittorrent["info"]["name"];
-      // }
-
-      var speed = SpeedUtil.getSpeedFormat(v["downloadSpeed"]);
-      var gid = v["gid"];
-      var status = v["status"];
-      var workingPeer = v["connections"];
-      var percentage = 0.0;
-      int t = int.parse(v["totalLength"]);
-      Aria2Api aria2api = _aria2api;
-      if (t != 0) {
-        percentage =
-            (int.parse(v["completedLength"]) / int.parse(v["totalLength"]));
-      }
-      if (status == "paused") {
-        speed = SpeedUtil.getSpeedFormat("0");
-      }
-
-      return Builder(
-          builder: (context) => DownloadingFile(
-              filename: filename,
-              speed: speed,
-              gid: gid,
-              status: status,
-              workingPeer: workingPeer,
-              percentage: percentage,
-              aria2api: _aria2api));
-    }).toList();
+    return results;
   }
 
   _startTimer() {
-    this._timer = Timer.periodic(new Duration(seconds: 60), (timer) {
-      print("_startTimer");
+    this._timer = Timer.periodic(new Duration(seconds: 6), (timer) {
       this._onSyncRefresh();
     });
   }
@@ -159,60 +151,4 @@ class _DownloadingState extends State<Downloading> {
   _cancelTimer() {
     this._timer?.cancel();
   }
-
-  // Future<dynamic> _onRefresh() {
-  //   _data.clear();
-  //   return _channel.stream().then((data) {
-  //     setState(() => this.data.addAll(data));
-  //   });
-  // }
-
-  // Widget _getDownloadingList(var data, BuildContext context) {
-  //   List v = data["result"];
-  //   return ListView.builder(
-  //       itemCount: v.length,
-  //       itemBuilder: (BuildContext context, int index) {
-  //         return Builder(
-  //           builder: (context) {
-  //             List filedir = v[index]["files"][0]["path"].toString().split("/");
-  //             var filename = filedir[filedir.length - 1];
-  //             var speed = SpeedUtil.getSpeedFormat(v[index]["downloadSpeed"]);
-  //             var gid = v[index]["gid"];
-  //             var status = v[index]["status"];
-  //             var workingPeer = v[index]["connections"];
-  //             var percentage = (int.parse(v[index]["completedLength"]) /
-  //                         int.parse(v[index]["totalLength"]) *
-  //                         100)
-  //                     .toStringAsFixed(2) +
-  //                 "%";
-  //             return DownloadingFile(
-  //               filename: filename,
-  //               speed: speed,
-  //               gid: gid,
-  //               status: status,
-  //               workingPeer: workingPeer,
-  //               percentage: percentage,
-  //             );
-  //           },
-  //         );
-  //       });
-  // }
-  // return data.map((v) {
-  //   List filedir = v["files"][0]["path"].toString().split("/");
-  //   var filename = filedir[filedir.length - 1];
-  //   var speed = SpeedUtil.getSpeedFormat(v["downloadSpeed"]);
-  //   var gid = v["gid"];
-  //   var workingPeer = v["connections"];
-  //   var percentage =
-  //       (int.parse(v["completedLength"]) / int.parse(v["totalLength"]) * 100)
-  //               .toStringAsFixed(2) +
-  //           "%";
-  //   return DownloadingFile(
-  //     filename: filename,
-  //     speed: speed,
-  //     gid: gid,
-  //     workingPeer: workingPeer,
-  //     percentage: percentage,
-  //   );
-  // }).toList();
 }
