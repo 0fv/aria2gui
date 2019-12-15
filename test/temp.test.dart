@@ -5,7 +5,8 @@ import 'package:more/iterable.dart';
 // List filename = v[0]["files"][0]["path"].toString().split("/");
 // var x = filename[filename.length-1];
 void main() {
-  print(indexed(['a', 'b'], offset: 1)
-  .map((each) => '${each.index}: ${each.value}')
-  .join(', '));
+  // String x = "asdfasdfasdf";
+  // print(x.split(","));
+  List x = [];
+  print(x[0]);
 }
