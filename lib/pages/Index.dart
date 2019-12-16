@@ -46,6 +46,7 @@ class _IndexPageState extends State<IndexPage> {
         profile.addr.isNotEmpty) {
       this._profile = profile;
       _aria2api.connect(_profile);
+      print(_profile.addr);
       _refreshIndicatorKey = new GlobalKey<RefreshIndicatorState>();
       SchedulerBinding.instance.addPostFrameCallback((_) {
         _refreshIndicatorKey.currentState?.show();

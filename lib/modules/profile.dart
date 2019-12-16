@@ -5,7 +5,7 @@ class Profile {
   String _addr;
   String _token;
   String _port;
-  int _interval = 10;
+  int _interval = 0;
 
   Profile(this._name, this._addr, this._token, this._port);
   String get addr => _addr;
