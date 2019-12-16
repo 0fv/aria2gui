@@ -1,13 +1,10 @@
-import 'dart:convert';
+
 import 'package:aria2gui/common/aria2api.dart';
-import 'package:aria2gui/modules/inactivemodel.dart';
 import 'package:aria2gui/widgets/dowloadfile.dart';
 import 'package:aria2gui/widgets/newmission.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
-import 'package:provider/provider.dart';
-
 class Downloading extends StatelessWidget {
   final Aria2Api aria2api;
   final VoidCallback refresh;

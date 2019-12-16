@@ -2,7 +2,6 @@ import 'package:aria2gui/common/aria2api.dart';
 import 'package:aria2gui/data/profile.dart';
 import 'package:aria2gui/modules/profile.dart';
 import 'package:dio/dio.dart';
-import 'package:web_socket_channel/status.dart' as status;
 
 main() async {
   var p = Profile.fromJson(vprofile);

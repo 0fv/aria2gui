@@ -11,6 +11,7 @@ import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:provider/provider.dart';
+import 'package:toast/toast.dart';
 
 class IndexPage extends StatefulWidget {
   @override
@@ -36,11 +37,10 @@ class _IndexPageState extends State<IndexPage> {
     super.didChangeDependencies();
     final profile = Provider.of<ServersModel>(context).getNow();
     int interval = profile.interval;
-
     this._cancelTimer();
-
-    this._startTimer(interval);
-
+    if (interval != 0) {
+      this._startTimer(interval);
+    }
     if (profile != this._profile &&
         profile != null &&
         profile.addr.isNotEmpty) {
@@ -50,7 +50,6 @@ class _IndexPageState extends State<IndexPage> {
       SchedulerBinding.instance.addPostFrameCallback((_) {
         _refreshIndicatorKey.currentState?.show();
         this._onRefresh();
-        // this._startTimer(profile.interval);
       });
     }
   }
@@ -83,7 +82,7 @@ class _IndexPageState extends State<IndexPage> {
               Container(
                 height: 50,
               ),
-              ServerList(),
+              ServerList(_clearTasks),
               AddServer(),
             ],
           ),
@@ -111,8 +110,14 @@ class _IndexPageState extends State<IndexPage> {
     List dataList = [];
     List<Future<Response>> rs = _aria2api.getStatus();
     for (Future<Response> fr in rs) {
-      Response r = await fr;
-      dataList.add(r.data);
+      try {
+        Response r = await fr;
+        dataList.add(r.data);
+      } on DioError catch (e) {
+        this._timer.cancel();
+        Toast.show("${e.message}please check your server config", context,
+            duration: Toast.LENGTH_LONG, gravity: Toast.CENTER);
+      }
     }
 
     return dataList;
@@ -161,8 +166,14 @@ class _IndexPageState extends State<IndexPage> {
     });
   }
 
+  _clearTasks() {
+    setState(() {
+      this._active = [];
+      this._inactive = [];
+    });
+  }
+
   _cancelTimer() {
     this._timer?.cancel();
-
   }
 }

@@ -8,6 +8,9 @@ import 'package:more/iterable.dart';
 import 'package:provider/provider.dart';
 
 class ServerList extends StatelessWidget {
+  final VoidCallback clearTasks;
+  ServerList(this.clearTasks);
+
   @override
   Widget build(BuildContext context) {
     List<Profile> list = Provider.of<ServersModel>(context).servers;
@@ -33,6 +36,7 @@ class ServerList extends StatelessWidget {
                           profile,
                         );
                       }
+                      Navigator.of(context).pop();
                     },
                   ),
                   IconButton(
@@ -46,12 +50,14 @@ class ServerList extends StatelessWidget {
                       if (c) {
                         Provider.of<ServersModel>(context).delete(v.index);
                       }
+                      Navigator.of(context).pop();
                     },
                   ),
                 ],
               ),
               onTap: () {
                 Provider.of<ServersModel>(context).setIndex(v.index);
+                clearTasks();
                 Navigator.of(context).pop();
               },
             );
