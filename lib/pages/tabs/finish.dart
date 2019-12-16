@@ -1,27 +1,51 @@
-import 'package:aria2gui/modules/inactivemodel.dart';
+import 'package:aria2gui/widgets/inactivefile.dart';
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
 
-class Finish extends StatefulWidget {
-  Finish({Key key}) : super(key: key);
+class Finish extends StatelessWidget {
+  final List inactive;
 
-  @override
-  _FinishState createState() => _FinishState();
-}
+  const Finish({Key key, this.inactive}) : super(key: key);
 
-class _FinishState extends State<Finish> {
   @override
   Widget build(BuildContext context) {
-    final inactive = Provider.of<InactiveModel>(context);
-    return Container(
-      child: Builder(
-        builder: (context) {
-          List x = inactive.inactiveList;
-          String r = '?';
-          x.forEach((y) => r+y.toString());
-          return Text(r);
+    if (inactive.isEmpty) {
+      return Container(
+        child: Text("empty"),
+      );
+    } else {
+      return ListView.builder(
+        itemCount: inactive.length,
+        itemBuilder: (context, v) {
+          Map value = _getInfo(inactive[v]);
+
+          return InactiveFile(
+              name: value["name"], status: value["status"], url: value["url"]);
         },
-      ),
-    );
+      );
+    }
+  }
+
+  Map _getInfo(Map value) {
+    Map m = Map();
+    var filename;
+    var bittorrent = value["bittorrent"];
+    if (bittorrent == null) {
+      List filedir = value["files"][0]["path"].toString().split("/");
+      if (filedir.isEmpty) {
+        filename = "unkown";
+      } else {
+        filename = filedir[filedir.length - 1];
+      }
+    } else {
+      filename = bittorrent["info"]["name"];
+    }
+    m["name"] = filename;
+    String status = value["status"];
+    if (status == "error") {
+      status = status + " " + value["errorMessage"];
+    }
+    m["status"] = status;
+    m["url"] = value["files"][0]["uris"][0]["uri"];
+    return m;
   }
 }

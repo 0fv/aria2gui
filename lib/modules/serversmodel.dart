@@ -1,4 +1,3 @@
-import 'package:aria2gui/common/aria2api.dart';
 import 'package:aria2gui/modules/profile.dart';
 import 'package:flutter/material.dart';
 import 'package:localstorage/localstorage.dart';
@@ -47,32 +46,36 @@ class ServersModel extends ChangeNotifier {
     }
   }
 
-  void add(Profile profile) {
+  add(Profile profile) async {
     List list = ls.getItem("servers");
     list.add(profile);
-    ls.setItem("servers", list);
+    await ls.setItem("servers", list);
     _servers.add(profile);
     notifyListeners();
   }
 
-  void alter(int index, Profile profile) {
+  alter(int index, Profile profile) async {
     List list = ls.getItem("servers");
     list.removeAt(index);
     list.insert(index, profile);
-    ls.setItem("servers", list);
+    await ls.setItem("servers", list);
     _servers.removeAt(index);
     _servers.insert(index, profile);
     notifyListeners();
   }
 
-  void delete(int index) {
+  alterNowProfile(Profile profile) {
+    alter(_index, profile);
+  }
+
+  delete(int index) async {
     List list = ls.getItem("servers");
     list.removeAt(index);
-    if (list.length - 1 > this._index) {
-      this._index--;
-      ls.setItem("index", _index);
+    if (list.length  == this._index) {
+      this._index = this._index - 1;
+      await ls.setItem("index", _index);
     }
-    ls.setItem("servers", list);
+    await ls.setItem("servers", list);
     _servers.removeAt(index);
     notifyListeners();
   }

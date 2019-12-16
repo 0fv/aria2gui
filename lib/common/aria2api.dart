@@ -4,6 +4,9 @@ import 'package:aria2gui/modules/instruction.dart';
 import 'package:aria2gui/modules/profile.dart';
 import 'package:dio/dio.dart';
 
+
+
+
 class Aria2Api {
   Profile _profile;
   String _url;
@@ -15,6 +18,10 @@ class Aria2Api {
     this._url = "http://${this._profile.addr}:${this._profile.port}/jsonrpc";
     _dio = Dio();
     return this;
+  }
+
+  bool isconnected() {
+    return (_url != null && _url.isNotEmpty);
   }
 
   void close() {
@@ -46,7 +53,7 @@ class Aria2Api {
 
   Future<Response> pauseGid(String gid) {
     return sendMsg(
-        Instruction("aria2.pause", [gid], token: this._profile.token));
+        Instruction("aria2.forcePause", [gid], token: this._profile.token));
   }
 
   Future<Response> unpauseGid(String gid) {

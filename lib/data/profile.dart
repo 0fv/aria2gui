@@ -2,7 +2,8 @@ var vprofile = {
   "name": "name2",
   "addr": "127.0.0.1",
   "port": "6800",
-  "token": "123123"
+  "token": "123123",
+  "interval": 10
 };
 
 var dowloading = [

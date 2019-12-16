@@ -258,3 +258,9 @@
 ```json
 [{ "id": 1, "jsonrpc": "2.0", "result": "7ca947820f663261" }]
 ```
+
+## error
+
+```json
+[{completedLength: 0, connections: 0, dir: /home/ning/Downloads, downloadSpeed: 0, errorCode: 2, errorMessage: Timeout., files: [{completedLength: 0, index: 1, length: 0, path: , selected: true, uris: [{status: used, uri: https://files.yande.re/image/89930566cb13b66daaf40722499f9c47/yande.re%20594903%20garter%20leotard%20miyafuji_yoshika%20pantyhose%20strike_witches%20tagme%20tokinii.jpg}]}], gid: 5acdaa4a8eaac85b, numPieces: 0, pieceLength: 1048576, status: error, totalLength: 0, uploadLength: 0, uploadSpeed: 0}]
+```

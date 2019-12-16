@@ -1,17 +1,15 @@
 import 'dart:async';
 import 'dart:convert';
-
 import 'package:aria2gui/common/aria2api.dart';
 import 'package:aria2gui/modules/profile.dart';
-
 import 'package:aria2gui/modules/serversmodel.dart';
 import 'package:aria2gui/pages/tabs/downloading.dart';
 import 'package:aria2gui/pages/tabs/finish.dart';
-import 'package:aria2gui/pages/tabs/settings.dart';
 import 'package:aria2gui/widgets/addserver.dart';
 import 'package:aria2gui/widgets/serverlist.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/scheduler.dart';
 import 'package:provider/provider.dart';
 
 class IndexPage extends StatefulWidget {
@@ -25,16 +23,59 @@ class _IndexPageState extends State<IndexPage> {
   Aria2Api _aria2api = Aria2Api();
   List _active = [];
   List _inactive = [];
+  Profile _profile;
+  GlobalKey<RefreshIndicatorState> _refreshIndicatorKey;
+  @override
+  void initState() {
+    super.initState();
+    _aria2api = new Aria2Api();
+  }
+
+  @override
+  didChangeDependencies() {
+    super.didChangeDependencies();
+    final profile = Provider.of<ServersModel>(context).getNow();
+    int interval = profile.interval;
+
+    this._cancelTimer();
+
+    this._startTimer(interval);
+
+    if (profile != this._profile &&
+        profile != null &&
+        profile.addr.isNotEmpty) {
+      this._profile = profile;
+      _aria2api.connect(_profile);
+      _refreshIndicatorKey = new GlobalKey<RefreshIndicatorState>();
+      SchedulerBinding.instance.addPostFrameCallback((_) {
+        _refreshIndicatorKey.currentState?.show();
+        this._onRefresh();
+        // this._startTimer(profile.interval);
+      });
+    }
+  }
+
+  @override
+  void dispose() {
+    this._cancelTimer();
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
-    var profile = Provider.of<ServersModel>(context).getNow();
-    _aria2api.connect(profile);
+    List<Widget> tabsPage = [
+      Downloading(
+          active: _active, refresh: _onSyncRefresh, aria2api: _aria2api),
+      Finish(
+        inactive: _inactive,
+      ),
+    ];
 
-    List<Widget> tabsPage = [Downloading(), Finish(), Settings()];
     return Container(
       child: Scaffold(
         appBar: AppBar(
-          title: Text("aria2-profile:${profile.name}"),
+          title: Text(
+              "aria2-profile:${this._profile != null ? this._profile.name : ''}"),
         ),
         drawer: Drawer(
           child: ListView(
@@ -60,8 +101,6 @@ class _IndexPageState extends State<IndexPage> {
                 icon: Icon(Icons.cached), title: Text("active")),
             BottomNavigationBarItem(
                 icon: Icon(Icons.done_all), title: Text("Inactive")),
-            BottomNavigationBarItem(
-                icon: Icon(Icons.settings), title: Text("settings")),
           ],
         ),
       ),
@@ -94,6 +133,7 @@ class _IndexPageState extends State<IndexPage> {
       if (results.isNotEmpty) {
         results.forEach((result) {
           String status = result["status"];
+
           if (status == "active" || status == "paused") {
             active.add(result);
           } else {
@@ -108,20 +148,21 @@ class _IndexPageState extends State<IndexPage> {
     });
   }
 
-  void _onSyncRefresh() async {
+  Future<void> _onSyncRefresh() async {
     var data = await _fetchData();
     setState(() {
       groupdata(data);
     });
   }
 
-  _startTimer() {
-    this._timer = Timer.periodic(new Duration(seconds: 6), (timer) {
-      this._onSyncRefresh();
+  _startTimer(int sec) {
+    this._timer = Timer.periodic(new Duration(seconds: sec), (timer) async {
+      await this._onSyncRefresh();
     });
   }
 
   _cancelTimer() {
     this._timer?.cancel();
+
   }
 }
