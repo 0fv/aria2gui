@@ -1,9 +1,9 @@
 import 'package:aria2gui/modules/inactivemodel.dart';
+import 'package:aria2gui/modules/serversmodel.dart';
+import 'package:aria2gui/pages/Index.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-import 'modules/serversmodel.dart';
-import 'router/router.dart';
 
 void main() => runApp(MyApp());
 
@@ -21,9 +21,9 @@ class MyApp extends StatelessWidget {
       ],
       child: MaterialApp(
           debugShowCheckedModeBanner: false,
-          initialRoute: '/',
+          home: IndexPage(),
           theme: ThemeData(primaryColor: Colors.blueAccent),
-          onGenerateRoute: renderPage),
+          ),
     );
   }
 }

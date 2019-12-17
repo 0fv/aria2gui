@@ -9,9 +9,7 @@ class Finish extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     if (inactive.isEmpty) {
-      return Container(
-        child: Text("empty"),
-      );
+      return Container();
     } else {
       return ListView.builder(
         itemCount: inactive.length,
