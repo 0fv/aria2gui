@@ -1,6 +1,6 @@
-import 'dart:convert';
 
-import 'package:aria2gui/modules/profile.dart';
+
+
 
 // Profile p = Profile("name1", null, "sdfsdf");
 // List<Profile> l = List();

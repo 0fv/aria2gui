@@ -1,5 +1,5 @@
-import 'package:aria2gui/data/profile.dart';
-import 'package:more/iterable.dart';
+
+
 
 // List v = dowloading["result"];
 // List filename = v[0]["files"][0]["path"].toString().split("/");

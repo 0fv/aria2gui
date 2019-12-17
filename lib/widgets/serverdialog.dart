@@ -52,7 +52,7 @@ Future<bool> showDeleteConfirmDialog1(context) {
 }
 
 class ServerForm extends StatefulWidget {
-  Profile profile;
+  final Profile profile;
   ServerForm({Key key, this.profile}) : super(key: key);
 
   @override
