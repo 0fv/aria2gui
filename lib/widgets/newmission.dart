@@ -1,9 +1,8 @@
-
 // ignore: avoid_web_libraries_in_flutter
-import 'dart:convert';
-import 'dart:html' as html;
-import 'dart:typed_data';
 
+import 'package:aria2gui/util/torrentutil_web.dart'
+    if (dart.library.io) 'package:aria2gui/util/torrentutil_io.dart'
+    ;
 import 'package:flutter/material.dart';
 
 Future<dynamic> addMission(BuildContext context) {
@@ -32,7 +31,8 @@ class _TaskFormState extends State<TaskForm> {
 
   TextEditingController _urlController = TextEditingController();
   bool _chosen = false;
-  html.File _file;
+  String _torrentBase64;
+  String _filename;
   bool _end = false;
   GlobalKey _formKey = new GlobalKey<FormState>();
   @override
@@ -111,12 +111,12 @@ class _TaskFormState extends State<TaskForm> {
                           style: TextStyle(color: Colors.red),
                         ),
                       ),
-                      Text(
-                          "torrent:${this._file == null ? "" : this._file.name}"),
+                      Text("torrent:${this?._filename}"),
                       RaisedButton(
-                        child: Text("upload"),
-                        onPressed: _getFile,
-                      )
+                          child: Text("upload"),
+                          onPressed: () async {
+                            await getTorrent(_setTorrentFile, _setFormatError);
+                          })
                     ],
                   )),
               Row(
@@ -139,44 +139,31 @@ class _TaskFormState extends State<TaskForm> {
   }
 
   _setTask() {
-    Map<String, String> m = Map();
     if ((_formKey.currentState as FormState).validate()) {
-      String value;
+      Map<String, String> m = Map();
       if (this._chosen) {
-        var r = new html.FileReader();
-        r.readAsArrayBuffer(this._file);
-        r.onLoadEnd.listen((e) {
-          Uint8List data = r.result;
-          value = base64Encode(data);
-          m["torrent"] = value;
-          Navigator.of(context).pop(m);
-        });
+        m["torrent"] = this._torrentBase64;
+        Navigator.of(context).pop(m);
       } else {
-        value = _urlController.text;
+        String value = _urlController.text;
         m["urls"] = value;
         Navigator.of(context).pop(m);
       }
     }
   }
 
-  _getFile() {
-    html.InputElement uploadInput = html.FileUploadInputElement();
-    uploadInput.multiple = false;
-    uploadInput.click();
-    uploadInput.onChange.listen((e) {
-      final files = uploadInput.files;
-      html.File fileItem = files[0];
-      String type = fileItem.type;
-      if (type.contains("torrent")) {
-        setState(() {
-          this._end = false;
-          this._file = fileItem;
-        });
-      } else {
-        setState(() {
-          this._end = true;
-        });
-      }
+  _setTorrentFile(String filename, String base64) {
+    setState(() {
+      this._end = false;
+      this._filename = filename;
+      this._torrentBase64 = base64;
+    });
+  }
+
+  _setFormatError() {
+    setState(() {
+      this._filename = '';
+      this._end = true;
     });
   }
 }

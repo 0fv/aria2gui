@@ -1,4 +1,3 @@
-import 'package:aria2gui/modules/inactivemodel.dart';
 import 'package:aria2gui/modules/serversmodel.dart';
 import 'package:aria2gui/pages/Index.dart';
 import 'package:flutter/material.dart';
@@ -14,9 +13,6 @@ class MyApp extends StatelessWidget {
       providers: [
         ChangeNotifierProvider(
           create: (context) => ServersModel(),
-        ),
-        ChangeNotifierProvider(
-          create: (context) => InactiveModel(),
         )
       ],
       child: MaterialApp(

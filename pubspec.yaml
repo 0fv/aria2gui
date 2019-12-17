@@ -1,6 +1,5 @@
 name: aria2gui
-description: aria2 web gui
-
+description: a aria2 web ,android gui
 
 # The following defines the version and build number for your application.
 # A version number is three numbers separated by dots, like 1.2.43
@@ -12,7 +11,7 @@ description: aria2 web gui
 # In iOS, build-name is used as CFBundleShortVersionString while build-number used as CFBundleVersion.
 # Read more about iOS versioning at
 # https://developer.apple.com/library/archive/documentation/General/Reference/InfoPlistKeyReference/Articles/CoreFoundationKeys.html
-version: 1.0.0+1
+version: 0.0.1
 
 environment:
   sdk: ">=2.1.0 <3.0.0"
@@ -30,6 +29,7 @@ dependencies:
   web_socket_channel: 1.1.0
   dio: 3.0.7
   toast: ^0.1.5
+  file_picker: 1.4.3+1
   # json_annotation: 3.0.0
 
 dev_dependencies:
